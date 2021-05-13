@@ -48,6 +48,9 @@ if __name__ == '__main__':
         current_config[f'config_{dset}_stereo']['geom']['threshold'] = final_ths[dset]
         # I did a little bit of tuning offline for multiview, so we will put it here
         current_config[f'config_{dset}_multiview']['matcher']['filtering']['threshold'] = 0.95
+        #Remember, that we should not forget to turn FLANN ofd
+        current_config[f'config_{dset}_multiview']['matcher']['flann'] = False
+        current_config[f'config_{dset}_stereo']['matcher']['flann'] = False
     current_config['metadata']['method_name'] = 'KORNIA TUTORIAL CV-DoG-AffNet-HardNet8'
 
     label = current_config['config_common']['json_label'] 

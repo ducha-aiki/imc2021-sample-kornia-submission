@@ -210,7 +210,7 @@ def convert_kpts_to_imc(cv2_kpts):
     return keypoints, scales, angles, responses
 ```
 
-Now we are ready to write a script, which extracts local features for all images in the IMC-2021. The full script is accesible [here]()
+Now we are ready to write a script, which extracts local features for all images in the IMC-2021. The full script is accesible [here](https://github.com/ducha-aiki/imc2021-sample-kornia-submission/blob/master/extract_features_imc.py)
 
 
 ```python
@@ -639,6 +639,9 @@ for dset in ['phototourism', 'pragueparks', 'googleurban']:
     current_config[f'config_{dset}_stereo']['geom']['threshold'] = final_ths[dset]
     # I did a little bit of tuning offline for multiview, so we will put it here
     current_config[f'config_{dset}_multiview']['matcher']['filtering']['threshold'] = 0.95
+    #Remember, that we should not forget to turn FLANN ofd
+    current_config[f'config_{dset}_multiview']['matcher']['flann'] = False
+    current_config[f'config_{dset}_stereo']['matcher']['flann'] = False
 current_config['metadata']['method_name'] = 'KORNIA TUTORIAL CV-DoG-AffNet-HardNet8'
 
 label = current_config['config_common']['json_label'] 
