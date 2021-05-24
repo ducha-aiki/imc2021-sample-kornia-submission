@@ -15,7 +15,7 @@ def extract_features(img_fname, detector, affine, descriptor, device, visualize=
     img = cv2.cvtColor(cv2.imread(img_fname), cv2.COLOR_BGR2RGB)
     if visualize:
         plt.imshow(img)
-    kpts = detector.detect(img, None)
+    kpts = detector.detect(img, None)[:8000]
     # We will not train anything, so let's save time and memory by no_grad()
     with torch.no_grad():
         timg = K.image_to_tensor(img, False).float()/255.
@@ -94,11 +94,11 @@ if __name__ == '__main__':
                     key = os.path.splitext(os.path.basename(img_fname))[0]
                     kpts, descs = extract_features(img_fname_full,  sift_det, affnet, hardnet8, device, False)
                     keypoints, scales, angles, responses = convert_kpts_to_imc(kpts)
-                    f_kp[key] = keypoints
-                    f_desc[key] = descs.reshape(-1, 128)
-                    f_score[key] = responses
-                    f_ang[key] = angles
-                    f_scale[key] = scales
+                    f_kp[key] = keypoints[:8000]
+                    f_desc[key] = descs.reshape(-1, 128)[:8000]
+                    f_score[key] = responses[:8000]
+                    f_ang[key] = angles[:8000]
+                    f_scale[key] = scales[:8000]
                     num_kp.append(len(keypoints))
                 print(f'Finished processing "{ds}/{seq}" -> {np.array(num_kp).mean()} features/image')
 

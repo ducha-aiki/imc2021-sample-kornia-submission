@@ -150,7 +150,7 @@ def extract_features(img_fname, detector, affine, descriptor, device, visualize=
     img = cv2.cvtColor(cv2.imread(img_fname), cv2.COLOR_BGR2RGB)
     if visualize:
         plt.imshow(img)
-    kpts = detector.detect(img, None)
+    kpts = detector.detect(img, None)[:8000]
     # We will not train anything, so let's save time and memory by no_grad()
     with torch.no_grad():
         timg = K.image_to_tensor(img, False).float()/255.
