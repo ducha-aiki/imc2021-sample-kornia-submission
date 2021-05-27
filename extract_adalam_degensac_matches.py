@@ -14,6 +14,7 @@ import pydegensac
 from tqdm import tqdm
 from PIL import Image
 import argparse
+from shutil import copyfile
 
 def load_h5(filename):
     '''Loads dictionary from hdf5 file'''
@@ -50,7 +51,7 @@ def match_adalam_with_degensac(kp1, kp2, s1, s2, a1, a2, descs1, descs2,
                             o2=a2.reshape(-1),
                             s1=s1.reshape(-1),
                             s2=s2.reshape(-1)).detach().cpu().numpy()
-    if len(idxs) < 7:
+    if len(idxs) <= 8:
         return np.empty((0,1), dtype=np.float32), np.empty((0,2), dtype=np.int32)
     src_pts = kp1[idxs[:,0]]
     dst_pts = kp2[idxs[:,1]]
@@ -86,14 +87,17 @@ if __name__ == '__main__':
     INPUT_DIR = args.data_path
     OUT_DIR = args.save_path
     datasets = [x for x in os.listdir(INPUT_DIR) if os.path.isdir(os.path.join(INPUT_DIR, x))]
-    print (datasets)
+    #datasets = ['pragueparks']
+    #datasets = ['pragueparks', 'phototourism', 'googleurban']
+    #datasets = ['phototourism']
+    #datasets = ['googleurban']
     for ds in datasets:
         print (f"Processing dataset {ds}")
         ds_in_path = os.path.join(INPUT_DIR, ds)
         ds_out_path = os.path.join(OUT_DIR, ds)
         os.makedirs(ds_out_path, exist_ok=True)
         seqs = [x for x in os.listdir(ds_in_path) if os.path.isdir(os.path.join(ds_in_path,x))]
-        for seq in seqs:
+        for seq in seqs[::-1]:
             print (f"Processing sequence {seq}")
             if os.path.isdir(os.path.join(ds_in_path, seq, 'set_100')):
                 seq_in_path = os.path.join(ds_in_path, seq, 'set_100', 'images')
@@ -106,7 +110,10 @@ if __name__ == '__main__':
             descs = load_h5(os.path.join(seq_out_path, 'descriptors.h5'))
             img_fnames = sorted(os.listdir(seq_in_path))[::-1]
             num_matches = []
-            with h5py.File(f'{seq_out_path}/matches-stereo.h5', 'w') as f_m:
+            if os.path.isfile(f'{seq_out_path}/matches_stereo_0.h5') and not os.path.isfile(f'{seq_out_path}/matches-stereo.h5'):
+                print ('File exists, skipping')
+                continue
+            with h5py.File(f'{seq_out_path}/matches_stereo_0.h5', 'w') as f_m:
                 for i1, img1_fname in tqdm(enumerate(img_fnames)):
                     print (f'Matching image {img1_fname}')
                     img1_key = os.path.splitext(os.path.basename(img1_fname))[0]
@@ -129,4 +136,5 @@ if __name__ == '__main__':
                         idxs = idxs.T
                         assert idxs.shape[0] == 2
                         f_m[match_key] = idxs
-                print(f'Finished processing "{ds}/{seq}" -> {np.array(num_matches).mean()} matches/image')
+            print(f'Finished processing "{ds}/{seq}" -> {np.array(num_matches).mean()} matches/image')
+            copyfile(f'{seq_out_path}/matches_stereo_0.h5', f'{seq_out_path}/matches_multiview.h5')
