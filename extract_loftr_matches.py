@@ -46,13 +46,16 @@ def match_with_loftr(matcher, img1, img2, W, H):
         matcher(batch)
     src_pts = batch['mkpts0_f'].detach().cpu().numpy()
     dst_pts = batch['mkpts1_f'].detach().cpu().numpy()
-    
+    mconf = batch['mconf'].detach().cpu().numpy().reshape(-1)
+    th=0.0
+    mask = mconf > th
+    print (len(mask), (mconf > th).sum())
     src_pts[:,0] *=coef_w1
     src_pts[:,1] *=coef_h1
 
     dst_pts[:,0] *=coef_w2
     dst_pts[:,1] *=coef_h2
-    return src_pts, dst_pts
+    return src_pts[mask], dst_pts[mask]
 
 
 if __name__ == '__main__':
@@ -66,10 +69,10 @@ if __name__ == '__main__':
     parser.add_argument(
         "--save_path",
         type=str,
-        default=os.path.join('extracted', 'loftr'),
+        default=os.path.join('extracted', 'loftrconf'),
         help='Path to store the features')
-    W, H = args.resize_to_width, args.resize_to_height
     args = parser.parse_args()
+    W, H = args.resize_to_width, args.resize_to_height
     device = torch.device('cpu')
     device=torch.device('cuda')
     INPUT_DIR = args.data_path
@@ -85,6 +88,9 @@ if __name__ == '__main__':
         ds_in_path = os.path.join(INPUT_DIR, ds)
         ds_out_path = os.path.join(OUT_DIR, ds)
         os.makedirs(ds_out_path, exist_ok=True)
+        seqs = [x for x in os.listdir(ds_in_path) if os.path.isdir(os.path.join(ds_in_path,x))]
+        #seqs = ['st_peters_square', 'reichstag', 'sacre_coeur']
+        #seqs = ['st_peters_square', 'reichstag', 'sacre_coeur']
         seqs = [x for x in os.listdir(ds_in_path) if os.path.isdir(os.path.join(ds_in_path,x))]
         for seq in seqs[::-1]:
             print (f"Processing sequence {seq}")
@@ -109,7 +115,7 @@ if __name__ == '__main__':
                     for img2_fname in tqdm(img_fnames[i1+1:]):
                         img2_key = os.path.splitext(os.path.basename(img2_fname))[0]
                         img2_fname_full = os.path.join(seq_in_path, img2_fname)
-                        img2 = cv2.imread(img1_fname_full, cv2.IMREAD_GRAYSCALE)
+                        img2 = cv2.imread(img2_fname_full, cv2.IMREAD_GRAYSCALE)
                         match_key = f'{img1_key}-{img2_key}'
                         kp2_key = f'{img2_key}-{img1_key}'
                         src_pts, dst_pts = match_with_loftr(matcher, img1, img2, W, H)
