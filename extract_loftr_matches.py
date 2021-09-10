@@ -30,14 +30,25 @@ def load_h5(filename):
     return dict_to_load
 
 
-def match_with_loftr(matcher, img1, img2, th):
+def match_with_loftr(matcher, img1, img2, th, W, H):
     timg1 = K.image_to_tensor(img1, None).float().to(device) / 255.
     timg2 = K.image_to_tensor(img2, None).float().to(device) / 255.
+    h1, w1 = timg1.shape[2:]
+    h2, w2 = timg2.shape[2:]
+    to_resize =  (W != -1) and (H != -1)
+    if to_resize:
+        timg1 = K.resize(timg1, (H, W))
+        timg2 = K.resize(timg2, (H, W))
     batch = {'image0': timg1, 'image1': timg2}
     with torch.no_grad():
         out = matcher(batch)
     src_pts = out['keypoints0'].detach().cpu().numpy()
     dst_pts = out['keypoints1'].detach().cpu().numpy()
+    if to_resize:
+        src_pts[:,0] *= float (w1) / float(W)
+        src_pts[:,1] *= float (h1) / float(H)
+        dst_pts[:,0] *= float (w2) / float(W)
+        dst_pts[:,1] *= float (h2) / float(H)
     mconf = out['confidence'].detach().cpu().numpy().reshape(-1)
     mask = mconf > th
     return src_pts[mask], dst_pts[mask]
@@ -45,6 +56,10 @@ def match_with_loftr(matcher, img1, img2, th):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("IMC2021 LoFTR sample submission script")
+    parser.add_argument(
+        "--resize_to_width", type=int, default=1024, help='-1 to keep original size')
+    parser.add_argument(
+        "--resize_to_height", type=int, default=768, help='-1 to keep original size')
     parser.add_argument(
         "--conf", type=float, default=0.5, help='')
     parser.add_argument(
@@ -57,9 +72,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     device = torch.device('cpu')
     device=torch.device('cuda')
+    W, H = args.resize_to_width, args.resize_to_height
     conf = args.conf
     INPUT_DIR = args.data_path
-    OUT_DIR = f'{args.save_path}-orig-{conf}'
+    OUT_DIR = f'{args.save_path}-{W}-{H}-{conf}'
     #datasets = [x for x in os.listdir(INPUT_DIR) if os.path.isdir(os.path.join(INPUT_DIR, x))]
     #datasets = ['pragueparks']
     #datasets = ['pragueparks', 'phototourism', 'googleurban']
@@ -100,7 +116,7 @@ if __name__ == '__main__':
                         img2 = cv2.imread(img2_fname_full, cv2.IMREAD_GRAYSCALE)
                         match_key = f'{img1_key}-{img2_key}'
                         kp2_key = f'{img2_key}-{img1_key}'
-                        src_pts, dst_pts = match_with_loftr(matcher, img1, img2, conf)
+                        src_pts, dst_pts = match_with_loftr(matcher, img1, img2, conf, W, H)
                         idxs = np.stack([np.arange(len(src_pts)), np.arange(len(src_pts))],axis=-1)
                         num_matches.append(len(idxs))
                         if len(idxs) == 0:
