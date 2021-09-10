@@ -121,7 +121,7 @@ if __name__ == '__main__':
                     img1 = Image.open(img1_fname_full)
                     w1, h1 = img1.size
                     kp1, s1, a1, descs1 = get_data(kps, angles, scales, descs, img1_key)
-                    for img2_fname in tqdm(img_fnames[i1:]):
+                    for img2_fname in tqdm(img_fnames[i1+1:]):
                         img2_key = os.path.splitext(os.path.basename(img2_fname))[0]
                         img2_fname_full = os.path.join(seq_in_path, img2_fname)
                         img2 = Image.open(img2_fname_full)
