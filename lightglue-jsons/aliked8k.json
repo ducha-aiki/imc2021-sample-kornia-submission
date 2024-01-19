@@ -1,0 +1,36 @@
+[
+  {
+    "metadata": {
+      "publish_anonymously": false,
+      "authors": "Challenge organizers",
+      "contact_email": "ducha.aiki@gmail.com",
+      "method_name": "ALIKED-LightGlue",
+      "method_description": "ALIKED keypoints 8000 features matched with LightGlue with DEGENSAC",
+      "link_to_website": "https://github.com/cvg/LightGlue",
+      "link_to_pdf": "https://arxiv.org/pdf/2304.03608.pdf"
+    },
+    "config_common": {
+      "json_label": "aliked-lightglue-degensac-inlth-0.75",
+      "keypoint": "aliked",
+      "descriptor": "aliked",
+      "num_keypoints": 8000
+    },
+    "config_phototourism_stereo": {
+      "use_custom_matches": true,
+        "custom_matches_name": "lg3",
+      "geom": {
+        "method": "cmp-degensac-f",
+        "threshold": 0.75,
+        "confidence": 0.999999,
+        "max_iter": 100000,
+        "error_type": "sampson",
+        "degeneracy_check": true
+      }
+    },
+    "config_phototourism_multiview": {
+        "use_custom_matches": true,
+        "custom_matches_name": "lg3",
+      "colmap": {}
+    }
+  }
+]

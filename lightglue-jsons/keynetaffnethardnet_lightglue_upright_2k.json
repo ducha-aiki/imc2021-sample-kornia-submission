@@ -1,0 +1,53 @@
+[
+  {
+    "metadata": {
+      "publish_anonymously": false,
+      "authors": "Challenge organizers",
+      "contact_email": "ducha.aiki@gmail.com",
+      "method_name": "KeyNetAffNet-UprightHardNet-LightGlue",
+      "method_description": "Upright KeyNet keypoints (2048) with AffNet normalization, with HardNet descriptor as implemented in kornia.\n Matching with LightGlue, trained by kornia team, and DEGENSAC",
+      "link_to_website": "https://github.com/kornia/kornia",
+      "link_to_pdf": "https://arxiv.org/pdf/2306.13643.pdf"
+    },
+    "config_common": {
+      "json_label": "keynet-affnet-uprighthardnet-lightglue-degensac-inlth-0.75",
+      "keypoint": "keynet",
+      "descriptor": "affnetuprighthardnet",
+      "num_keypoints": 2048
+    },
+    "config_pragueparks_stereo": {
+      "use_custom_matches": true,
+        "custom_matches_name": "lg3",
+      "geom": {
+        "method": "cmp-degensac-f",
+        "threshold": 1.75,
+        "confidence": 0.999999,
+        "max_iter": 100000,
+        "error_type": "sampson",
+        "degeneracy_check": true
+      }
+    },
+    "config_pragueparks_multiview": {
+        "use_custom_matches": true,
+        "custom_matches_name": "lg3",
+      "colmap": {}
+    },
+    "config_phototourism_stereo": {
+      "use_custom_matches": true,
+        "custom_matches_name": "lg3",
+      "geom": {
+        "method": "cmp-degensac-f",
+        "threshold": 0.75,
+        "confidence": 0.999999,
+        "max_iter": 100000,
+        "error_type": "sampson",
+        "degeneracy_check": true
+      }
+    },
+    "config_phototourism_multiview": {
+        "use_custom_matches": true,
+        "custom_matches_name": "lg3",
+      "colmap": {}
+    }
+  }
+]

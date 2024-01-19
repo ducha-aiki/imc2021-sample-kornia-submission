@@ -1,0 +1,36 @@
+[
+  {
+    "metadata": {
+      "publish_anonymously": false,
+      "authors": "Challenge organizers",
+      "contact_email": "ducha.aiki@gmail.com",
+      "method_name": "SuperPoint-LightGlue",
+      "method_description": "SuperPoint 8000 features + LightGlue matching (no adaptive)",
+      "link_to_website": "https://github.com/cvg/LightGlue",
+      "link_to_pdf": "https://arxiv.org/pdf/2306.13643.pdf"
+    },
+    "config_common": {
+      "json_label": "sp8k-lightglue-degensac-inlth-1.1",
+      "keypoint": "sp",
+      "descriptor": "sp",
+      "num_keypoints": 8000
+    },
+    "config_phototourism_stereo": {
+      "use_custom_matches": true,
+        "custom_matches_name": "lg3",
+      "geom": {
+        "method": "cmp-degensac-f",
+        "threshold": 1.1,
+        "confidence": 0.999999,
+        "max_iter": 100000,
+        "error_type": "sampson",
+        "degeneracy_check": true
+      }
+    },
+    "config_phototourism_multiview": {
+        "use_custom_matches": true,
+        "custom_matches_name": "lg3",
+      "colmap": {}
+    }
+  }
+]

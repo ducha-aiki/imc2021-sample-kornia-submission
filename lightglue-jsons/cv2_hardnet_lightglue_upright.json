@@ -1,0 +1,36 @@
+[
+  {
+    "metadata": {
+      "publish_anonymously": false,
+      "authors": "Challenge organizers",
+      "contact_email": "ducha.aiki@gmail.com",
+      "method_name": "CV-DoG-UprightHardNet-LightGlue",
+      "method_description": "Upright OpenCV SIFT keypoints 8000 features, with HardNet descriptor as implemented in kornia.\n Matching with LightGlue, trained by kornia team, and DEGENSAC",
+      "link_to_website": "https://github.com/kornia/kornia",
+      "link_to_pdf": "https://arxiv.org/pdf/2306.13643.pdf"
+    },
+    "config_common": {
+      "json_label": "dog-uprighthardnet-lightglue2-degensac-inlth-0.5",
+      "keypoint": "cv2dog",
+      "descriptor": "uprighthardnet",
+      "num_keypoints": 8000
+    },
+    "config_phototourism_stereo": {
+      "use_custom_matches": true,
+        "custom_matches_name": "lg3",
+      "geom": {
+        "method": "cmp-degensac-f",
+        "threshold": 0.5,
+        "confidence": 0.999999,
+        "max_iter": 100000,
+        "error_type": "sampson",
+        "degeneracy_check": true
+      }
+    },
+    "config_phototourism_multiview": {
+        "use_custom_matches": true,
+        "custom_matches_name": "lg3",
+      "colmap": {}
+    }
+  }
+]

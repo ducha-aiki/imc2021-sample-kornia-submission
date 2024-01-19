@@ -58,6 +58,8 @@ if __name__ == '__main__':
     parser.add_argument(
         "--num_keypoints", type=int, default=8000, help='Number of keypoints')
     parser.add_argument(
+        "--feature", type=str, default="dog_hardnet")
+    parser.add_argument(
         "--data_path", type=str, default=os.path.join('..', 'imc-2021-data'))
     parser.add_argument(
         "--save_path",
@@ -70,11 +72,11 @@ if __name__ == '__main__':
     OUT_DIR = args.save_path
     datasets = [x for x in os.listdir(INPUT_DIR) if os.path.isdir(os.path.join(INPUT_DIR, x))]
     #datasets = ['pragueparks']
-    #datasets = ['pragueparks', 'phototourism', 'googleurban']
-    datasets = ['phototourism']
+    datasets = ['pragueparks', 'phototourism']
+    #datasets = ['pragueparks']
     #datasets = ['googleurban']
     device=torch.device('cuda')
-    lg_matcher = KF.LightGlueMatcher("dog_hardnet", 
+    lg_matcher = KF.LightGlueMatcher(args.feature, 
                                  {"width_confidence": -1,
                                   "depth_confidence": -1}).eval().to(device)
     for ds in datasets:
@@ -97,9 +99,9 @@ if __name__ == '__main__':
             descs = load_h5(os.path.join(seq_out_path, 'descriptors.h5'))
             img_fnames = sorted(os.listdir(seq_in_path))[::-1]
             num_matches = []
-            #if os.path.isfile(f'{seq_out_path}/matches.h5') and not os.path.isfile(f'{seq_out_path}/matches.h5'):
-            #    print ('File exists, skipping')
-            #    continue
+            if os.path.isfile(f'{seq_out_path}/matches.h5'):
+                print ('File exists, skipping')
+                continue
             with h5py.File(f'{seq_out_path}/matches.h5', 'w') as f_m:
                 for i1, img1_fname in tqdm(enumerate(img_fnames)):
                     print (f'Matching image {img1_fname}')
